@@ -1,0 +1,13 @@
+/* Design tokens — palette and type get finalised in the design pass. */
+:root {
+  --color-bg: #0a0a0a;
+  --color-fg: #f2efe9;
+  --color-muted: #8a867f;
+  --color-accent: #e03e2d;
+
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-cinematic: cubic-bezier(0.83, 0, 0.17, 1);
+}

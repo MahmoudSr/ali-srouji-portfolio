@@ -1,17 +1,25 @@
+# Dependencies / build output
+node_modules
+dist
+dist-ssr
+*.local
+.cache/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Env
+.env
+.env.*
+
 # macOS
 .DS_Store
 ._*
 
 # Editors
-.vscode/
-.idea/
-
-# Dependencies / build output
-node_modules/
-dist/
-build/
-.cache/
-
-# Env
-.env
-.env.*
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
