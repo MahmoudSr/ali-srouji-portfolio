@@ -1,30 +1,36 @@
 /**
- * Stand-in frames for the cut-in montage and the hero.
- * Swap point for Ali's real footage: replace the `src` values (and later point
- * `poster`/`clip` at real video) without touching any layout or timing code.
+ * Frames pulled from Ali's short film "Chase Me Down to Main Street" (2025).
+ * Stills live in `public/frames/`, extracted read-only from the master on the
+ * external drive. Cut order below is the montage order: the film's own beats,
+ * tightening toward the street.
  */
 export type Frame = {
-  /** Image used as a montage cut and, for the hero, the held frame. */
   src: string;
-  /** Short slate line shown under the strip. Keep it factual. */
+  /** Slate line for the clip strip. Names the shot, nothing more. */
   slate: string;
+  /** Source timecode in the film, in seconds. Kept so cuts can be re-pulled. */
+  at: number;
 };
 
-const stand = (seed: string, w = 1600, h = 900) =>
-  `https://picsum.photos/seed/${seed}/${w}/${h}`;
+export const film = {
+  title: 'Chase Me Down to Main Street',
+  year: 2025,
+  role: 'Written and directed by Ali Srouji',
+  runtime: 164,
+};
 
-/** Order is the cut order. Fast at the front, held at the end. */
+/** Cut order. Fast at the front, held on the last frame. */
 export const montage: Frame[] = [
-  { src: stand('ali-street-night'), slate: 'Night exterior' },
-  { src: stand('ali-portrait-window'), slate: 'Window light' },
-  { src: stand('ali-desert-road'), slate: 'Road' },
-  { src: stand('ali-hands-camera'), slate: 'Insert' },
-  { src: stand('ali-crowd-blur'), slate: 'Crowd' },
-  { src: stand('ali-sea-horizon'), slate: 'Horizon' },
-  { src: stand('ali-neon-corridor'), slate: 'Corridor' },
-  { src: stand('ali-smoke-stage'), slate: 'Stage' },
-  { src: stand('ali-rain-glass'), slate: 'Rain' },
-  { src: stand('ali-hero-hold', 2400, 1350), slate: 'Held frame' },
+  { src: '/frames/frame-09.jpg', slate: 'Cap', at: 6 },
+  { src: '/frames/frame-01.jpg', slate: 'Terminal', at: 52 },
+  { src: '/frames/frame-03.jpg', slate: 'Wheel', at: 59.5 },
+  { src: '/frames/frame-08.jpg', slate: 'Close', at: 65 },
+  { src: '/frames/frame-02.jpg', slate: 'Blade', at: 85 },
+  { src: '/frames/frame-07.jpg', slate: 'Floor', at: 98 },
+  { src: '/frames/frame-05.jpg', slate: 'Stairwell', at: 105 },
+  { src: '/frames/frame-04.jpg', slate: 'Flare', at: 112 },
+  { src: '/frames/frame-06.jpg', slate: 'The wall', at: 138 },
+  { src: '/frames/frame-10.jpg', slate: 'Main Street', at: 151.5 },
 ];
 
 /** The frame the site lands on after the cut-in. */

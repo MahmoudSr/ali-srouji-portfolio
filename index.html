@@ -41,11 +41,14 @@
 
     <main data-barba="container" data-barba-namespace="home" class="page">
       <section class="hero">
-        <div class="hero__frame"><img id="hero-frame" alt="" decoding="async" /></div>
+        <div class="hero__frame">
+            <video id="hero-video" class="hero__video" poster="/frames/frame-10.jpg"
+                   muted loop playsinline preload="none" aria-hidden="true"></video>
+          </div>
         <div class="hero__body">
           <h2 class="hero__title"><span><i>Ali</i></span><span><i>Srouji</i></span></h2>
           <div>
-            <p class="hero__note">Films, commercials and music videos, cut and shot in Berlin.</p>
+            <p class="hero__note">Short films and music videos, written, shot and cut. Latest: <em>Chase Me Down to Main Street</em>.</p>
             <a class="hero__cta mono" href="#work">View the reel</a>
           </div>
         </div>
@@ -62,7 +65,7 @@
 
     <div class="hud mono" aria-hidden="true">
       <span class="hud__tc" id="hud-tc">00:00:00:00</span>
-      <span class="hud__meta">Ali Srouji / Reel 01</span>
+      <span class="hud__meta">Chase Me Down to Main Street / 2025</span>
     </div>
     <div class="hud__bar" aria-hidden="true"><span class="hud__fill" id="hud-fill"></span></div>
 

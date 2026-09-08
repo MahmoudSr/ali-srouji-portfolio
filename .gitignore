@@ -24,5 +24,4 @@ npm-debug.log*
 !.vscode/settings.json
 .idea
 
-gate.png
-mid.png
+/*.png

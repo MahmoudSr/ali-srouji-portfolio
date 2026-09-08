@@ -43,10 +43,14 @@ export async function initGate(): Promise<void> {
   const loadEl = qs<HTMLElement>('#gate-load')!;
   const playhead = qs<HTMLElement>('#gate-playhead')!;
   const slate = qs<HTMLElement>('#gate-slate')!;
-  const heroImg = qs<HTMLImageElement>('#hero-frame')!;
+  const heroVideo = qs<HTMLVideoElement>('#hero-video')!;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  heroImg.src = heldFrame.src;
+  // The hero holds the same frame the montage lands on, then keeps moving.
+  heroVideo.poster = heldFrame.src;
+  heroVideo.src = window.matchMedia('(max-width: 760px)').matches
+    ? '/video/hero-loop-720.mp4'
+    : '/video/hero-loop.mp4';
 
   // Free-running record timecode. It is the site's clock from here on.
   const start = performance.now();
@@ -67,6 +71,9 @@ export async function initGate(): Promise<void> {
   // Real loading state on the ruler, so the cue only arms once cuts can be clean.
   const loadTween = gsap.to(loadEl, { scaleX: 0.85, duration: 6, ease: 'power1.out' });
   await preload(montage.map((f) => f.src));
+  // Stills are in, so the cut can run clean. The hero clip loads behind the gate.
+  heroVideo.preload = 'auto';
+  heroVideo.load();
   loadTween.kill();
   gsap.to(loadEl, { scaleX: 1, duration: 0.4, ease: 'power2.out' });
   slate.textContent = 'Ready to roll';
@@ -87,6 +94,9 @@ export async function initGate(): Promise<void> {
         gate.classList.add('is-open');
         resolve();
       };
+
+      // Reduced motion keeps the held frame still; everyone else gets the clip.
+      if (!reduced) void heroVideo.play().catch(() => {});
 
       if (reduced) {
         // Tier 2: the gate still gates, the montage becomes a single dissolve.
