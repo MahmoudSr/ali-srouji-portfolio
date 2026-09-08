@@ -29,9 +29,11 @@ export const montage: Frame[] = [
   { src: '/frames/frame-07.jpg', slate: 'Floor', at: 98 },
   { src: '/frames/frame-05.jpg', slate: 'Stairwell', at: 105 },
   { src: '/frames/frame-04.jpg', slate: 'Flare', at: 112 },
-  { src: '/frames/frame-06.jpg', slate: 'The wall', at: 138 },
-  { src: '/frames/frame-10.jpg', slate: 'Main Street', at: 151.5 },
+  { src: '/frames/frame-06.jpg', slate: 'Run', at: 124.8 },
+  { src: '/frames/frame-10.jpg', slate: 'The alley', at: 138.9 },
 ];
 
-/** The frame the site lands on after the cut-in. */
+/** The frame the site lands on after the cut-in. The hero clip is encoded from
+ *  this exact timecode, so the film simply carries on from where the cut stops
+ *  and runs its own edits through to just before the credits. */
 export const heldFrame = montage[montage.length - 1];
