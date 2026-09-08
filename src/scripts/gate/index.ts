@@ -95,8 +95,12 @@ export async function initGate(): Promise<void> {
         resolve();
       };
 
-      // Reduced motion keeps the held frame still; everyone else gets the clip.
-      if (!reduced) void heroVideo.play().catch(() => {});
+      // The film picks up on the frame the cut lands on, so playback starts
+      // there and nowhere earlier.
+      const rollFilm = () => {
+        heroVideo.currentTime = 0;
+        void heroVideo.play().catch(() => {});
+      };
 
       if (reduced) {
         // Tier 2: the gate still gates, the montage becomes a single dissolve.
@@ -104,6 +108,7 @@ export async function initGate(): Promise<void> {
           .timeline({ onComplete: done })
           .set(layers[layers.length - 1], { opacity: 1 })
           .to(gate, { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' })
+          .call(rollFilm)
           .to('.hud, .hud__bar', { opacity: 1, duration: 0.4 }, '-=0.2');
         return;
       }
@@ -130,6 +135,7 @@ export async function initGate(): Promise<void> {
 
       // Land: letterbox opens, the name rises out from behind the bars.
       tl.to(playhead, { x: () => gate.clientWidth, duration: at, ease: 'none' }, 0.18)
+        .call(rollFilm, [], at + 0.02)
         .to('.bars__bar', { scaleY: 0, duration: 0.9, ease: 'power4.inOut' }, at + 0.1)
         .from(
           '.hero__title i',

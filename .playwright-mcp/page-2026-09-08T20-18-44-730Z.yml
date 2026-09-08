@@ -1,0 +1,32 @@
+- generic [active] [ref=e1]:
+  - button "Press Space or tap the screen to enter the site" [ref=e2] [cursor=pointer]:
+    - banner [ref=e14]:
+      - generic [ref=e15]: Rec
+      - generic [aria-hidden] [ref=e17]: 00:00:00:01
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - heading "Ali Srouji" [level=1] [ref=e20]:
+          - generic [ref=e21]: Ali
+          - generic [ref=e22]: Srouji
+        - paragraph [ref=e23]: Filmmaker / Editor
+      - paragraph [ref=e24]:
+        - generic [ref=e25]: Space
+        - text: to roll
+    - generic [ref=e26]:
+      - generic [ref=e30]: Ready to roll
+      - generic [ref=e31]: 2.39:1 / 24 fps
+  - main [ref=e32]:
+    - generic [ref=e36]:
+      - heading "Ali Srouji" [level=2] [ref=e37]:
+        - generic [ref=e38]: Ali
+        - generic [ref=e40]: Srouji
+      - generic [ref=e42]:
+        - paragraph [ref=e43]:
+          - text: "Short films and music videos, written, shot and cut. Latest:"
+          - emphasis [ref=e44]: Chase Me Down to Main Street
+          - text: .
+        - link "View the reel" [ref=e45] [cursor=pointer]:
+          - /url: "#work"
+  - generic [aria-hidden]:
+    - generic: 00:00:00:00
+    - generic: Chase Me Down to Main Street / 2025
