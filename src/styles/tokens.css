@@ -22,4 +22,6 @@
   --track: 0.22em;
   --gutter: clamp(1rem, 3.2vw, 2.75rem);
   --bar: 11vh; /* letterbox height at rest */
+  /* One grade for stills and video, so the hold and the film match. */
+  --grade: saturate(0.86) contrast(1.08);
 }

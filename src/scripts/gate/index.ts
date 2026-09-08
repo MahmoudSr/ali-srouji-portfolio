@@ -100,6 +100,19 @@ export async function initGate(): Promise<void> {
       const rollFilm = () => {
         heroVideo.currentTime = 0;
         void heroVideo.play().catch(() => {});
+        // Cut the gate away on the video's first painted frame. Anything else
+        // leaves the still on screen while the film runs on behind it, and the
+        // reveal lands seconds into the shot.
+        const swap = () => gsap.set(gate, { autoAlpha: 0 });
+        type FrameCallbackHost = HTMLVideoElement & {
+          requestVideoFrameCallback?: (cb: () => void) => number;
+        };
+        const host = heroVideo as FrameCallbackHost;
+        if (typeof host.requestVideoFrameCallback === 'function') {
+          host.requestVideoFrameCallback(swap);
+        } else {
+          heroVideo.addEventListener('timeupdate', swap, { once: true });
+        }
       };
 
       if (reduced) {
