@@ -1,13 +1,25 @@
-/* Design tokens — palette and type get finalised in the design pass. */
+/* Bleach & ember. Near-black ground, cold silver type, one ember accent used
+   only for live elements (record dot, timecode, playhead, active hover). */
 :root {
-  --color-bg: #0a0a0a;
-  --color-fg: #f2efe9;
-  --color-muted: #8a867f;
-  --color-accent: #e03e2d;
+  --bg: #08090a;
+  --bg-lift: #0e1012;
+  --fg: #e8e9ea;
+  --fg-dim: #7e838a;
+  --fg-faint: #3a3f45;
+  --ember: #ff4a1c;
+  --bleach: #f6f4ef;
 
-  --font-display: 'Inter', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --line: rgba(232, 233, 234, 0.14);
+  --line-strong: rgba(232, 233, 234, 0.32);
 
+  --font-display: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
+
+  --ease-cut: cubic-bezier(0.83, 0, 0.17, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out-cinematic: cubic-bezier(0.83, 0, 0.17, 1);
+
+  --hud: 0.6875rem;
+  --track: 0.22em;
+  --gutter: clamp(1rem, 3.2vw, 2.75rem);
+  --bar: 11vh; /* letterbox height at rest */
 }

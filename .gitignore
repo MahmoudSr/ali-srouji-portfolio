@@ -23,3 +23,6 @@ npm-debug.log*
 !.vscode/extensions.json
 !.vscode/settings.json
 .idea
+
+gate.png
+mid.png

@@ -1,0 +1,29 @@
+- generic [active] [ref=f5e1]:
+  - button "Press Space or tap the screen to enter the site" [ref=f5e2] [cursor=pointer]:
+    - banner [ref=f5e14]:
+      - generic [ref=f5e15]: Rec
+      - generic [aria-hidden] [ref=f5e17]: 00:00:01:02
+    - generic [ref=f5e18]:
+      - generic [ref=f5e19]:
+        - heading "Ali Srouji" [level=1] [ref=f5e20]:
+          - generic [ref=f5e21]: Ali
+          - generic [ref=f5e22]: Srouji
+        - paragraph [ref=f5e23]: Filmmaker / Editor
+      - paragraph [ref=f5e24]:
+        - generic [ref=f5e25]: Space
+        - text: Press space to roll
+    - generic [ref=f5e26]:
+      - generic [ref=f5e30]: Ready to roll
+      - generic [ref=f5e31]: 2.39:1 / 24 fps
+  - main [ref=f5e32]:
+    - generic [ref=f5e35]:
+      - heading "Ali Srouji" [level=2] [ref=f5e36]:
+        - generic [ref=f5e37]: Ali
+        - generic [ref=f5e39]: Srouji
+      - generic [ref=f5e41]:
+        - paragraph [ref=f5e42]: Films, commercials and music videos, cut and shot in Berlin.
+        - link "View the reel" [ref=f5e43] [cursor=pointer]:
+          - /url: "#work"
+  - generic [aria-hidden]:
+    - generic: 00:00:00:00
+    - generic: Ali Srouji / Reel 01
