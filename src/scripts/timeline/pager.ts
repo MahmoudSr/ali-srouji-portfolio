@@ -6,6 +6,7 @@
 import { gsap } from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { freezeSection, playSection, primeSection } from './reels';
+import { isViewerOpen } from './viewer';
 import { qs, qsa } from '../utils/dom';
 
 gsap.registerPlugin(ScrollToPlugin);
@@ -92,7 +93,8 @@ export function initPager(): void {
       // Sideways gestures belong to the strip of clips, not to the pager.
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
       e.preventDefault();
-      if (paging) return;
+      // A piece is open on top of the page: nothing pages behind it.
+      if (paging || isViewerOpen()) return;
 
       const now = performance.now();
       if (now - lastEvent > GESTURE_GAP) travel = 0;
@@ -117,7 +119,7 @@ export function initPager(): void {
   window.addEventListener(
     'touchmove',
     (e) => {
-      if (paging) return;
+      if (paging || isViewerOpen()) return;
       const y = e.touches[0]?.clientY ?? 0;
       const dy = touchStart - y;
       if (Math.abs(dy) < 60) return;
@@ -128,6 +130,7 @@ export function initPager(): void {
   );
 
   window.addEventListener('keydown', (e) => {
+    if (isViewerOpen()) return;
     if (e.code === 'ArrowDown' || e.code === 'PageDown') go(index + 1);
     if (e.code === 'ArrowUp' || e.code === 'PageUp') go(index - 1);
   });

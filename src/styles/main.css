@@ -408,3 +408,78 @@ body.is-gated { overflow: hidden; }
 .strip__step:active { transform: translateY(-50%) scale(0.96); }
 .strip__step--prev { left: 0.5rem; }
 .strip__step--next { right: 0.5rem; }
+
+/* stills sit in the strip beside the clips, at their own shape */
+.reel--still { aspect-ratio: auto; width: auto; cursor: zoom-in; }
+.reel__image { height: 100%; width: auto; display: block; object-fit: cover; }
+.reel { cursor: pointer; }
+.reel:focus-visible { outline: 1px solid var(--ember); outline-offset: 3px; }
+
+/* ---------- the viewer ---------- */
+body.is-viewing { overflow: hidden; }
+/* [hidden] is a UA rule and loses to a class selector, so it is stated here:
+   without this the closed viewer stays on top and swallows every click. */
+.viewer[hidden] { display: none; }
+.viewer {
+  position: fixed; inset: 0; z-index: 95;
+  display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 1rem;
+  padding: var(--gutter);
+  background: rgba(4, 5, 6, 0.94);
+  backdrop-filter: blur(6px);
+}
+.viewer__chrome { display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: var(--fg-dim); }
+.viewer__title { color: var(--fg); }
+.viewer__close,
+.viewer__nav {
+  display: grid; place-items: center;
+  width: 2.75rem; height: 2.75rem;
+  background: rgba(8, 9, 10, 0.6);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--fg);
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease-out-expo), color 0.2s var(--ease-out-expo);
+}
+.viewer__close svg, .viewer__nav svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.viewer__close:hover, .viewer__nav:hover { border-color: var(--ember); color: var(--ember); }
+.viewer__nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; }
+.viewer__nav--prev { left: var(--gutter); }
+.viewer__nav--next { right: var(--gutter); }
+
+.viewer__stage { margin: 0; display: grid; place-items: center; min-height: 0; }
+/* A reel keeps a reel's shape: it is sized off the height it has to spare,
+   never stretched wider, and sits in the middle of the screen. */
+.viewer__media {
+  height: min(100%, 78vh);
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: #000;
+  display: block;
+  margin: auto;
+}
+.viewer__foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: var(--fg-dim); }
+.viewer__tc { font-variant-numeric: tabular-nums; }
+.viewer__sound {
+  position: static;
+  font-family: var(--font-mono); font-size: var(--hud);
+  letter-spacing: var(--track); text-transform: uppercase;
+  background: rgba(8, 9, 10, 0.6);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--fg);
+  padding: 0.5em 0.75em;
+  cursor: pointer;
+}
+.viewer__sound:hover { border-color: var(--ember); color: var(--ember); }
+.viewer__sound.is-on { border-color: var(--ember); color: var(--ember); }
+.viewer__progress {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: var(--ember); transform: scaleX(0); transform-origin: left;
+}
+
+@media (max-width: 760px) {
+  .viewer__nav { display: none; }
+}

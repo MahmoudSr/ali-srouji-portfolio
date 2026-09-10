@@ -26,3 +26,6 @@ Third-party assets used on the site. Every entry lists the source and licence.
 
 - **Stays reels** (2025), shot and cut by Ali Srouji for Barcoo Baakline. Clips in
   `public/video/stays/` are short excerpts of the delivered reels.
+
+- **Food District stills** (2025), photographed by Ali Srouji. Web sizes in `public/stills/fnb/`;
+  originals stay outside the repo.

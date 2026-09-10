@@ -1,41 +1,54 @@
 /**
- * Reel groups. One group is one section: related reels side by side, each
- * playing by itself while its section is on screen, muted until asked.
+ * Work sections. One group is one screen: related pieces side by side, clips
+ * playing by themselves while their section is up, stills sitting among them.
+ * The strip shows light files; clicking a piece opens the full quality one.
  */
 import { gsap } from 'gsap';
-import { reelGroups, type Reel, type ReelGroup } from '../data/work';
+import { groups, type Group, type Item } from '../data/work';
 import { isPaging } from './pager';
+import { openViewer } from './viewer';
 import { qs, qsa } from '../utils/dom';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const clipTime = (t: number) => `${pad(Math.floor(t / 60))}:${pad(Math.floor(t % 60))}`;
 
-function reelMarkup(reel: Reel): string {
-  return `
-    <figure class="reel" id="reel-${reel.id}">
-      <video class="reel__video" src="${reel.clip}" poster="${reel.poster}"
-             muted loop playsinline preload="metadata" aria-label="${reel.title}"></video>
-      ${reel.hasAudio ? '<button class="sound mono" type="button" aria-pressed="false">Sound off</button>' : ''}
-      <span class="reel__progress" aria-hidden="true"></span>
+function itemMarkup(item: Item, i: number): string {
+  const slate = `
       <figcaption class="reel__slate mono">
-        <span class="reel__name">${reel.title}</span>
-        <span class="reel__cut">${reel.cut ?? ''}</span>
-        <span class="reel__tc">00:00</span>
-      </figcaption>
+        <span class="reel__name">${item.title}</span>
+        <span class="reel__cut">${item.cut ?? ''}</span>
+        <span class="reel__tc">${item.kind === 'clip' ? '00:00' : 'Still'}</span>
+      </figcaption>`;
+
+  if (item.kind === 'still') {
+    return `
+    <figure class="reel reel--still" id="reel-${item.id}" data-index="${i}" tabindex="0">
+      <img class="reel__image" src="${item.strip}" alt="${item.title}" loading="lazy" decoding="async" />
+      ${slate}
+    </figure>`;
+  }
+
+  return `
+    <figure class="reel" id="reel-${item.id}" data-index="${i}" tabindex="0">
+      <video class="reel__video" src="${item.strip}" poster="${item.poster ?? ''}"
+             muted loop playsinline preload="metadata" aria-label="${item.title}"></video>
+      ${item.hasAudio ? '<button class="sound mono" type="button" aria-pressed="false">Sound off</button>' : ''}
+      <span class="reel__progress" aria-hidden="true"></span>
+      ${slate}
     </figure>`;
 }
 
-function groupMarkup(group: ReelGroup): string {
+function groupMarkup(group: Group): string {
   return `
     <section class="group" id="group-${group.id}" data-section
-             data-slate="${group.title} / Reels ${group.year}">
+             data-slate="${group.title} / ${group.year}">
       <header class="group__head">
         <h3 class="group__title">${group.title}</h3>
         <p class="group__note mono">${group.note}</p>
       </header>
       <div class="group__strip">
-        <div class="group__row" data-count="${group.reels.length}">
-          ${group.reels.map(reelMarkup).join('')}
+        <div class="group__row" data-count="${group.items.length}">
+          ${group.items.map(itemMarkup).join('')}
         </div>
         <button class="strip__step strip__step--prev" type="button" aria-label="Previous clips" hidden>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 L7 12 L15 20" /></svg>
@@ -47,20 +60,7 @@ function groupMarkup(group: ReelGroup): string {
     </section>`;
 }
 
-/**
- * Muted by default; the button is the only way sound ever starts, and turning
- * one on turns every other one off. Two clips playing over each other is noise.
- */
-export function wireSound(video: HTMLVideoElement, button: HTMLButtonElement | null): void {
-  if (!button) return;
-  sounded.push({ video, button });
-  button.addEventListener('click', (e) => {
-    e.stopPropagation();
-    soloSound(video.muted ? video : null);
-  });
-}
-
-/** Every clip that has a sound control, so only one can ever be audible. */
+/** Every clip with a sound control, so only one can ever be audible. */
 const sounded: { video: HTMLVideoElement; button: HTMLButtonElement }[] = [];
 
 function setSoundLabel(button: HTMLButtonElement, on: boolean): void {
@@ -83,8 +83,21 @@ function resetSound(scope: HTMLElement): void {
 }
 
 /**
+ * Muted by default; the button is the only way sound ever starts, and turning
+ * one on turns every other one off. Two clips playing over each other is noise.
+ */
+export function wireSound(video: HTMLVideoElement, button: HTMLButtonElement | null): void {
+  if (!button) return;
+  sounded.push({ video, button });
+  button.addEventListener('click', (e) => {
+    e.stopPropagation();
+    soloSound(video.muted ? video : null);
+  });
+}
+
+/**
  * Freeze a section: its clips hold on the frame they are on and go silent.
- * Called the instant a move starts, so the advance always runs over a still.
+ * Called the instant a move starts, so nothing animates over moving video.
  */
 export function freezeSection(section: HTMLElement): void {
   qsa<HTMLVideoElement>('video', section).forEach((video) => {
@@ -94,13 +107,16 @@ export function freezeSection(section: HTMLElement): void {
   resetSound(section);
 }
 
+/** True when any part of the element is inside the viewport. */
+function onScreen(el: HTMLElement): boolean {
+  const r = el.getBoundingClientRect();
+  return r.bottom > 0 && r.top < window.innerHeight && r.right > 0 && r.left < window.innerWidth;
+}
+
 /**
- * Get a section's clips decoding before it is asked to play, so arriving does
- * not collide with the first frames being fetched and decoded.
- *
- * Only the clips in view and one beyond them: a group can hold six 1080p
- * files, and fetching the lot on arrival would cost tens of megabytes for
- * clips the visitor may never scroll to.
+ * Get a section's clips decoding before it is asked to play, and only the ones
+ * in view plus one: fetching a whole group on arrival would cost megabytes for
+ * pieces the visitor may never scroll to.
  */
 export function primeSection(section: HTMLElement): void {
   const videos = qsa<HTMLVideoElement>('video', section);
@@ -113,17 +129,7 @@ export function primeSection(section: HTMLElement): void {
   });
 }
 
-/** True when any part of the element is inside the viewport. */
-function onScreen(el: HTMLElement): boolean {
-  const r = el.getBoundingClientRect();
-  return r.bottom > 0 && r.top < window.innerHeight && r.right > 0 && r.left < window.innerWidth;
-}
-
-/**
- * Run the clips of the section that just landed. Only the ones actually in
- * view: a group can hold six, and six simultaneous decodes is what makes a
- * page stutter.
- */
+/** Run the clips of the section that just landed, if they are on screen. */
 export function playSection(section: HTMLElement): void {
   qsa<HTMLVideoElement>('video', section).forEach((video) => {
     if (!onScreen(video)) return;
@@ -133,9 +139,9 @@ export function playSection(section: HTMLElement): void {
 }
 
 /**
- * The strip of clips can be wider than the screen, so it can be dragged. A
- * horizontal wheel gesture pans it too, and is kept away from the pager, which
- * only wants vertical intent.
+ * The strip can be wider than the screen, so it can be dragged. A horizontal
+ * wheel pans it too, and is kept away from the pager, which wants only
+ * vertical intent.
  */
 function makeDraggable(row: HTMLElement): void {
   let down = false;
@@ -155,7 +161,7 @@ function makeDraggable(row: HTMLElement): void {
     if (!dragging) {
       if (Math.abs(dx) < 5) return;
       // Capture only once this is really a drag. Capturing on pointerdown
-      // would send the click to the strip instead of the button under it.
+      // would send the click to the strip instead of the piece under it.
       dragging = true;
       row.setPointerCapture(e.pointerId);
       row.classList.add('is-dragging');
@@ -168,7 +174,7 @@ function makeDraggable(row: HTMLElement): void {
     if (dragging) {
       row.releasePointerCapture?.(e.pointerId);
       row.classList.remove('is-dragging');
-      // A drag must not land as a click on the control underneath.
+      // A drag must not land as a click that opens a piece.
       row.addEventListener('click', (c) => c.stopPropagation(), { once: true, capture: true });
     }
     dragging = false;
@@ -178,7 +184,6 @@ function makeDraggable(row: HTMLElement): void {
 
   // The pager listens for wheel on the window and stops the event reaching
   // anything else, so a sideways gesture has to be caught before it does.
-  // This runs first because reels are wired up before the pager is.
   window.addEventListener(
     'wheel',
     (e) => {
@@ -217,65 +222,66 @@ function wireSteps(strip: HTMLElement): void {
     { passive: true },
   );
   window.addEventListener('resize', update);
-  // Clips get their width from an aspect ratio, which settles after the first
-  // paint, so the strip has to be measured again whenever it actually changes.
+  // Pieces get their width from an aspect ratio, which settles after the first
+  // paint, so the strip is measured again whenever it actually changes.
   new ResizeObserver(update).observe(row);
   qsa<HTMLElement>('.reel', row).forEach((reel) => new ResizeObserver(update).observe(reel));
-  // The strip starts at its head, and the arrows are judged after layout has
-  // settled, not before the clips have their size.
   row.scrollLeft = 0;
   requestAnimationFrame(update);
-  window.setTimeout(update, 400);
 }
 
 export function initReels(): void {
   const host = qs<HTMLElement>('#reels');
   if (!host) return;
-  host.insertAdjacentHTML('beforeend', reelGroups.map(groupMarkup).join(''));
+  host.insertAdjacentHTML('beforeend', groups.map(groupMarkup).join(''));
 
   qsa<HTMLElement>('.group__row').forEach(makeDraggable);
   qsa<HTMLElement>('.group__strip').forEach(wireSteps);
 
-  // Left and right travel the strip, the way up and down travel the sections.
-  window.addEventListener('keydown', (e) => {
-    if (e.code !== 'ArrowLeft' && e.code !== 'ArrowRight') return;
-    const row = qsa<HTMLElement>('.group__row').find((r) => {
-      const box = r.getBoundingClientRect();
-      return box.top < window.innerHeight * 0.75 && box.bottom > window.innerHeight * 0.25;
-    });
-    if (!row) return;
-    const width = (qs<HTMLElement>('.reel', row)?.clientWidth ?? 320) + 16;
-    row.scrollBy({ left: e.code === 'ArrowRight' ? width : -width, behavior: 'smooth' });
-  });
+  groups.forEach((group) => {
+    const section = qs<HTMLElement>(`#group-${group.id}`)!;
+    qsa<HTMLElement>('.reel', section).forEach((figure) => {
+      const at = Number(figure.dataset.index ?? 0);
 
-  qsa<HTMLElement>('.reel').forEach((figure) => {
-    const video = qs<HTMLVideoElement>('.reel__video', figure)!;
-    const progress = qs<HTMLElement>('.reel__progress', figure)!;
-    const tc = qs<HTMLElement>('.reel__tc', figure)!;
-    wireSound(video, qs<HTMLButtonElement>('.sound', figure));
-
-    // Safety net: whatever is actually on screen plays, whatever leaves stops.
-    // The pager owns the timing, so this stays quiet while a move is running.
-    new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          if (isPaging()) return;
-          video.preload = 'auto';
-          if (video.paused) void video.play().catch(() => {});
-        } else {
-          video.pause();
-          video.muted = true;
-          resetSound(figure);
+      // Opening a piece is what asks for its full quality file.
+      const open = () => openViewer(group.items, at);
+      figure.addEventListener('click', open);
+      figure.addEventListener('keydown', (e) => {
+        if (e.code === 'Enter' || e.code === 'Space') {
+          e.preventDefault();
+          open();
         }
-      },
-      { threshold: 0.6 },
-    ).observe(figure);
+      });
 
-    gsap.ticker.add(() => {
-      const duration = video.duration;
-      if (!duration) return;
-      gsap.set(progress, { scaleX: video.currentTime / duration });
-      tc.textContent = clipTime(video.currentTime);
+      const video = qs<HTMLVideoElement>('.reel__video', figure);
+      if (!video) return;
+      wireSound(video, qs<HTMLButtonElement>('.sound', figure));
+
+      // Safety net: whatever is on screen plays, whatever leaves stops. The
+      // pager owns the timing, so this stays quiet while a move is running.
+      new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            if (isPaging()) return;
+            video.preload = 'auto';
+            if (video.paused) void video.play().catch(() => {});
+          } else {
+            video.pause();
+            video.muted = true;
+            resetSound(figure);
+          }
+        },
+        { threshold: 0.6 },
+      ).observe(figure);
+
+      const progress = qs<HTMLElement>('.reel__progress', figure)!;
+      const tc = qs<HTMLElement>('.reel__tc', figure)!;
+      gsap.ticker.add(() => {
+        const duration = video.duration;
+        if (!duration) return;
+        gsap.set(progress, { scaleX: video.currentTime / duration });
+        tc.textContent = clipTime(video.currentTime);
+      });
     });
   });
 }
