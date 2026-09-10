@@ -1,16 +1,19 @@
-/** Lenis smooth scroll synced to GSAP ScrollTrigger. */
-import Lenis from 'lenis';
+/**
+ * Scroll setup.
+ *
+ * Lenis is deliberately not running. This site pages one full section at a
+ * time (see timeline/pager.ts), and a smooth-scroll layer fights that twice
+ * over: it answers the wheel itself, so a hard flick carries the page past the
+ * section, and its frame loop writes the scroll position back every frame,
+ * which cancels the pager's travel outright. Native scrolling plus ScrollTrigger
+ * is what the paged layout wants. If a freely scrolling page ever returns,
+ * bring Lenis back here and sync it to ScrollTrigger.
+ */
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export let lenis: Lenis | null = null;
-
-export function initScroll(): Lenis {
-  lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((time) => lenis?.raf(time * 1000));
-  gsap.ticker.lagSmoothing(0);
-  return lenis;
+export function initScroll(): void {
+  ScrollTrigger.defaults({ markers: false });
 }

@@ -17,12 +17,11 @@ body.is-gated { overflow: hidden; }
 
 /* Grain and vignette sit on one fixed, non-scrolling layer. */
 .film-grain {
-  position: fixed; inset: -50%;
+  position: fixed; inset: -20%;
   z-index: 90; pointer-events: none;
-  opacity: 0.42;
+  opacity: 0.13;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.55'/></svg>");
   animation: grain-shift 0.7s steps(6, end) infinite;
-  mix-blend-mode: soft-light;
   will-change: transform;
 }
 .film-vignette {
@@ -146,7 +145,7 @@ body.is-gated { overflow: hidden; }
 
 .hero { position: relative; height: 100dvh; display: grid; }
 .hero__frame { position: absolute; inset: 0; overflow: hidden; }
-.hero__frame video { width: 100%; height: 100%; object-fit: cover; filter: var(--grade); }
+.hero__frame video { width: 100%; height: 100%; object-fit: cover; }
 .hero__frame::after {
   content: ''; position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(8,9,10,0.94) 4%, rgba(8,9,10,0.25) 46%, rgba(8,9,10,0.6) 100%);
@@ -305,8 +304,8 @@ body.is-gated { overflow: hidden; }
 
 /* ---------- reel groups ---------- */
 .group {
-  position: relative; height: 100dvh;
-  display: grid; grid-template-rows: auto 1fr;
+  position: relative; height: 100dvh; contain: paint;
+  display: grid; grid-template-rows: auto minmax(0, 1fr);
   gap: clamp(1rem, 3vh, 2.25rem);
   padding: calc(var(--gutter) + 0.5rem) var(--gutter) calc(var(--gutter) + 3rem);
   background: var(--bg);
@@ -336,20 +335,24 @@ body.is-gated { overflow: hidden; }
   flex: 0 0 auto;
   height: 100%; aspect-ratio: 9 / 16;
   background: #000; overflow: hidden;
+  border-radius: var(--radius);
 }
-.reel__video { width: 100%; height: 100%; object-fit: cover; display: block; filter: var(--grade); }
+.reel__video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .reel__progress {
   position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
   background: var(--ember); transform: scaleX(0); transform-origin: left;
 }
 .reel__slate {
   position: absolute; left: 0; right: 0; bottom: 0;
-  display: flex; justify-content: space-between; gap: 1rem;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem;
   padding: 0.7rem 0.8rem 0.9rem;
   color: var(--fg);
   background: linear-gradient(to top, rgba(8, 9, 10, 0.85), transparent);
 }
-.reel__tc { color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+.reel__slate > span:first-child {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.reel__tc { flex: none; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
 
 /* one shared sound control, on reels and on the hero */
 .sound {
@@ -360,6 +363,7 @@ body.is-gated { overflow: hidden; }
   border: 1px solid var(--line-strong);
   color: var(--fg);
   padding: 0.5em 0.75em;
+  border-radius: var(--radius);
   cursor: pointer;
   transition: border-color 0.2s var(--ease-out-expo), color 0.2s var(--ease-out-expo);
 }
@@ -372,3 +376,35 @@ body.is-gated { overflow: hidden; }
   .group__row { gap: 0.6rem; }
   .group__note { display: none; }
 }
+
+/* A group can hold one clip or half a dozen: they shrink as the set grows,
+   and the strip is dragged when it runs past the edge of the screen. */
+.group__row { cursor: grab; touch-action: pan-x; }
+.group__row.is-dragging { cursor: grabbing; }
+.group__row.is-dragging .reel { pointer-events: none; }
+.group__row[data-count="3"] .reel,
+.group__row[data-count="4"] .reel { height: 92%; }
+.group__row[data-count="5"] .reel,
+.group__row[data-count="6"] .reel { height: 84%; }
+.group__row[data-count="7"] .reel,
+.group__row[data-count="8"] .reel { height: 76%; }
+
+/* the strip and its arrows */
+.group__strip { position: relative; min-height: 0; display: grid; }
+.strip__step {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  z-index: 3;
+  width: 2.75rem; height: 2.75rem;
+  display: grid; place-items: center;
+  background: rgba(8, 9, 10, 0.72);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--fg);
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease-out-expo), color 0.2s var(--ease-out-expo);
+}
+.strip__step svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.strip__step:hover { border-color: var(--ember); color: var(--ember); }
+.strip__step:active { transform: translateY(-50%) scale(0.96); }
+.strip__step--prev { left: 0.5rem; }
+.strip__step--next { right: 0.5rem; }

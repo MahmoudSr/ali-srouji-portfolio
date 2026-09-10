@@ -18,6 +18,9 @@
   --ease-cut: cubic-bezier(0.83, 0, 0.17, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
+  /* One radius for the whole site: clip media, controls. Full-bleed stays square. */
+  --radius: 0.5rem;
+
   --hud: 0.6875rem;
   --track: 0.22em;
   --gutter: clamp(1rem, 3.2vw, 2.75rem);

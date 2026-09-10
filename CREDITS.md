@@ -19,3 +19,7 @@ Third-party assets used on the site. Every entry lists the source and licence.
 - **Love** (2025), a wedding shot and cut by Ali Srouji, shown as two cuts in
   `public/video/weddings/`. Both are short excerpts transcoded from 4K vertical masters, which stay
   outside the repo.
+
+- **Catering and F&B reels** (2025), shot and cut by Ali Srouji for Furn Beirut and Food District
+  (Mikey's, Hamra). Clips in `public/video/catering/` and `public/video/fnb/` are short excerpts
+  transcoded from the masters, which stay outside the repo.

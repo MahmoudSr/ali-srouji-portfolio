@@ -25,3 +25,6 @@ npm-debug.log*
 .idea
 
 /*.png
+
+# Playwright MCP scratch output
+.playwright-mcp/

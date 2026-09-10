@@ -4,8 +4,7 @@
  * Resolves once the visitor is through, so the rest of the boot can continue.
  */
 import { gsap } from 'gsap';
-import { lenis } from '../animations/scroll';
-import { heroClipHasAudio, montage, heldFrame } from '../data/frames';
+import { montage, heldFrame } from '../data/frames';
 import { wireSound } from '../timeline/reels';
 import { qs } from '../utils/dom';
 
@@ -48,17 +47,40 @@ export async function initGate(): Promise<void> {
   const heroVideo = qs<HTMLVideoElement>('#hero-video')!;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Nothing scrolls behind the gate, and nothing scrolls during the cut.
-  lenis?.stop();
+  // Nothing scrolls behind the gate, and nothing scrolls during the cut:
+  // the body is locked, and the pager's observer swallows the wheel.
 
   // The hero holds the same frame the montage lands on, then keeps moving.
   heroVideo.poster = heldFrame.src;
 
-  // Sound is off until asked for, same as the reels. The control only exists
-  // if the clip actually carries audio.
+  // Sound is off until asked for, same as the reels. Whether this clip carries
+  // audio is read off the element once it is playing, so the control appears by
+  // itself the day the clip is re-cut with its sound.
   const heroSound = qs<HTMLButtonElement>('#hero-sound');
-  if (heroClipHasAudio) wireSound(heroVideo, heroSound);
-  else heroSound?.remove();
+  if (heroSound) {
+    heroSound.hidden = true;
+    wireSound(heroVideo, heroSound);
+    const probe = heroVideo as HTMLVideoElement & {
+      mozHasAudio?: boolean;
+      webkitAudioDecodedByteCount?: number;
+      audioTracks?: { length: number };
+    };
+    const revealIfAudible = () => {
+      const known =
+        probe.mozHasAudio !== undefined ||
+        probe.webkitAudioDecodedByteCount !== undefined ||
+        probe.audioTracks !== undefined;
+      const audible =
+        Boolean(probe.mozHasAudio) ||
+        (probe.webkitAudioDecodedByteCount ?? 0) > 0 ||
+        (probe.audioTracks?.length ?? 0) > 0;
+      // If the browser will not say, show the control rather than hide sound.
+      heroSound.hidden = known && !audible;
+    };
+    heroVideo.addEventListener('playing', () => window.setTimeout(revealIfAudible, 1200), {
+      once: true,
+    });
+  }
   heroVideo.src = window.matchMedia('(max-width: 760px)').matches
     ? '/video/film/chase-hero-720.mp4'
     : '/video/film/chase-hero.mp4';
@@ -101,9 +123,10 @@ export async function initGate(): Promise<void> {
 
       const done = () => {
         gsap.ticker.remove(tick);
-        // Scroll was held through the cut. Hand it back now the site is up.
+        // The pager is the only thing that scrolls this site, so Lenis stays
+        // stopped: left running it also answers the wheel, and a hard flick
+        // would carry the page half a section past where it should land.
         document.body.classList.remove('is-gated');
-        lenis?.start();
         gate.classList.add('is-open');
         resolve();
       };
