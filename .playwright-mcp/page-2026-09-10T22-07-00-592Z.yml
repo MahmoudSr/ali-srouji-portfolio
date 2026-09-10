@@ -1,0 +1,52 @@
+- generic [active] [ref=f10e1]:
+  - button "Press Space or tap the screen to enter the site" [ref=f10e2] [cursor=pointer]:
+    - banner [ref=f10e14]:
+      - generic [ref=f10e15]: Rec
+      - generic [aria-hidden] [ref=f10e17]: 00:00:00:01
+    - generic [ref=f10e18]:
+      - generic [ref=f10e19]:
+        - heading "Ali Srouji" [level=1] [ref=f10e20]:
+          - generic [ref=f10e21]: Ali
+          - generic [ref=f10e22]: Srouji
+        - paragraph [ref=f10e23]: Filmmaker / Editor
+      - paragraph [ref=f10e24]:
+        - generic [ref=f10e25]: Space
+        - text: to roll
+    - generic [ref=f10e26]:
+      - generic [ref=f10e30]: Ready to roll
+      - generic [ref=f10e31]: 2.39:1 / 24 fps
+  - main [ref=f10e32]:
+    - generic [ref=f10e36]:
+      - heading "Ali Srouji" [level=2] [ref=f10e37]:
+        - generic [ref=f10e38]: Ali
+        - generic [ref=f10e40]: Srouji
+      - generic [ref=f10e42]:
+        - paragraph [ref=f10e43]:
+          - text: "Short films and music videos, written, shot and cut. Latest:"
+          - emphasis [ref=f10e44]: Chase Me Down to Main Street
+          - text: .
+        - link "View the reel" [ref=f10e45] [cursor=pointer]:
+          - /url: "#work"
+    - heading "Reels" [level=2] [ref=f10e46]
+    - article [ref=f10e48]:
+      - heading "Love" [level=3] [ref=f10e49]
+      - generic [ref=f10e50]:
+        - generic [ref=f10e51]:
+          - term [ref=f10e52]: Kind
+          - definition [ref=f10e53]: Reel 2025
+        - generic [ref=f10e54]:
+          - term [ref=f10e55]: Role
+          - definition [ref=f10e56]: Shot and cut
+        - generic [ref=f10e57]:
+          - term [ref=f10e58]: Runtime
+          - definition [ref=f10e59]: 1:46
+        - generic [ref=f10e60]:
+          - term [ref=f10e61]: Format
+          - definition [ref=f10e62]: 2160 x 3840, 25 fps
+      - generic [ref=f10e63]:
+        - generic "Love" [ref=f10e64]
+        - button "Sound off" [ref=f10e65] [cursor=pointer]
+      - generic [ref=f10e68]: 00:00
+  - generic [aria-hidden]:
+    - generic: 00:00:00:00
+    - generic: Ali Srouji / Filmmaker

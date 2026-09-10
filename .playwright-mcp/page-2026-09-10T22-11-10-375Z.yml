@@ -1,0 +1,43 @@
+- generic [active] [ref=f1e1]:
+  - button "Press Space or tap the screen to enter the site" [ref=f1e2] [cursor=pointer]:
+    - banner [ref=f1e14]:
+      - generic [ref=f1e15]: Rec
+      - generic [aria-hidden] [ref=f1e17]: 00:00:00:00
+    - generic [ref=f1e18]:
+      - generic [ref=f1e19]:
+        - heading "Ali Srouji" [level=1] [ref=f1e20]:
+          - generic [ref=f1e21]: Ali
+          - generic [ref=f1e22]: Srouji
+        - paragraph [ref=f1e23]: Filmmaker / Editor
+      - paragraph [ref=f1e24]:
+        - generic [ref=f1e25]: Space
+        - text: to roll
+    - generic [ref=f1e26]:
+      - generic [ref=f1e30]: Ready to roll
+      - generic [ref=f1e31]: 2.39:1 / 24 fps
+  - main [ref=f1e32]:
+    - generic [ref=f1e36]:
+      - heading "Ali Srouji" [level=2] [ref=f1e37]:
+        - generic [ref=f1e38]: Ali
+        - generic [ref=f1e40]: Srouji
+      - generic [ref=f1e42]:
+        - paragraph [ref=f1e43]:
+          - text: "Short films and music videos, written, shot and cut. Latest:"
+          - emphasis [ref=f1e44]: Chase Me Down to Main Street
+          - text: .
+        - link "View the reel" [ref=f1e45] [cursor=pointer]:
+          - /url: "#work"
+    - heading "Reels" [level=2] [ref=f1e46]
+    - generic [ref=f1e48]:
+      - generic [ref=f1e49]:
+        - heading "Weddings" [level=3] [ref=f1e50]
+        - paragraph [ref=f1e51]: Shot and cut for the day itself, vertical, for the couple to post.
+      - figure "Love 00:00" [ref=f1e53]:
+        - generic "Love" [ref=f1e54]
+        - button "Sound off" [ref=f1e55] [cursor=pointer]
+        - generic [ref=f1e56]:
+          - generic [ref=f1e57]: Love
+          - generic [ref=f1e58]: 00:00
+  - generic [aria-hidden]:
+    - generic: 00:00:00:00
+    - generic: Ali Srouji / Filmmaker

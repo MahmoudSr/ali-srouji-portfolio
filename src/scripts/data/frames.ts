@@ -12,6 +12,9 @@ export type Frame = {
   at: number;
 };
 
+/** The hero clip was encoded silent. Set true once it carries its audio. */
+export const heroClipHasAudio = false;
+
 export const film = {
   title: 'Chase Me Down to Main Street',
   year: 2025,

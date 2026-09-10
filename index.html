@@ -6,6 +6,16 @@
     <meta name="description" content="Ali Srouji, filmmaker and editor. Selected work." />
     <meta name="theme-color" content="#08090a" />
     <title>Ali Srouji — Filmmaker</title>
+    <meta name="color-scheme" content="dark" />
+    <!-- Critical: the ground is black before any stylesheet lands, so a reload
+         never flashes white or shows the gate's markup unstyled. -->
+    <style>
+      html { background: #08090a; color-scheme: dark; }
+      body { margin: 0; background: #08090a; color: #e8e9ea; }
+      #gate { position: fixed; inset: 0; z-index: 60; background: #08090a; }
+      #gate, .hud, .hud__bar { visibility: hidden; }
+      .styled #gate, .styled .hud, .styled .hud__bar { visibility: visible; }
+    </style>
   </head>
   <body data-barba="wrapper" class="is-gated">
     <!-- The gate: press Space or tap to roll. -->
@@ -40,10 +50,11 @@
     </section>
 
     <main data-barba="container" data-barba-namespace="home" class="page">
-      <section class="hero">
+      <section class="hero" data-section data-slate="Ali Srouji / Filmmaker">
         <div class="hero__frame">
             <video id="hero-video" class="hero__video" poster="/frames/frame-10.jpg"
                    muted loop playsinline preload="none" aria-hidden="true"></video>
+            <button id="hero-sound" class="sound sound--hero mono" type="button" aria-pressed="false">Sound off</button>
           </div>
         <div class="hero__body">
           <h2 class="hero__title"><span><i>Ali</i></span><span><i>Srouji</i></span></h2>
@@ -53,6 +64,9 @@
           </div>
         </div>
       </section>
+
+      <h2 class="sr-only">Reels</h2>
+      <section class="work" id="reels"></section>
     </main>
 
     <div class="bars" aria-hidden="true">

@@ -4,7 +4,9 @@
  * Resolves once the visitor is through, so the rest of the boot can continue.
  */
 import { gsap } from 'gsap';
-import { montage, heldFrame } from '../data/frames';
+import { lenis } from '../animations/scroll';
+import { heroClipHasAudio, montage, heldFrame } from '../data/frames';
+import { wireSound } from '../timeline/reels';
 import { qs } from '../utils/dom';
 
 const FPS = 24;
@@ -46,8 +48,17 @@ export async function initGate(): Promise<void> {
   const heroVideo = qs<HTMLVideoElement>('#hero-video')!;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Nothing scrolls behind the gate, and nothing scrolls during the cut.
+  lenis?.stop();
+
   // The hero holds the same frame the montage lands on, then keeps moving.
   heroVideo.poster = heldFrame.src;
+
+  // Sound is off until asked for, same as the reels. The control only exists
+  // if the clip actually carries audio.
+  const heroSound = qs<HTMLButtonElement>('#hero-sound');
+  if (heroClipHasAudio) wireSound(heroVideo, heroSound);
+  else heroSound?.remove();
   heroVideo.src = window.matchMedia('(max-width: 760px)').matches
     ? '/video/hero-loop-720.mp4'
     : '/video/hero-loop.mp4';
@@ -87,10 +98,12 @@ export async function initGate(): Promise<void> {
       rolled = true;
       window.removeEventListener('keydown', onKey);
       gate.removeEventListener('pointerdown', onPointer);
-      document.body.classList.remove('is-gated');
 
       const done = () => {
         gsap.ticker.remove(tick);
+        // Scroll was held through the cut. Hand it back now the site is up.
+        document.body.classList.remove('is-gated');
+        lenis?.start();
         gate.classList.add('is-open');
         resolve();
       };
