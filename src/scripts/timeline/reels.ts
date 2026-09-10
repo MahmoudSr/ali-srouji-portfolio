@@ -17,7 +17,11 @@ function reelMarkup(reel: Reel): string {
              muted loop playsinline preload="metadata" aria-label="${reel.title}"></video>
       ${reel.hasAudio ? '<button class="sound mono" type="button" aria-pressed="false">Sound off</button>' : ''}
       <span class="reel__progress" aria-hidden="true"></span>
-      <figcaption class="reel__slate mono"><span>${reel.title}${reel.cut ? ` / ${reel.cut}` : ''}</span><span class="reel__tc">00:00</span></figcaption>
+      <figcaption class="reel__slate mono">
+        <span class="reel__name">${reel.title}</span>
+        <span class="reel__cut">${reel.cut ?? ''}</span>
+        <span class="reel__tc">00:00</span>
+      </figcaption>
     </figure>`;
 }
 
@@ -93,9 +97,16 @@ export function freezeSection(section: HTMLElement): void {
 /**
  * Get a section's clips decoding before it is asked to play, so arriving does
  * not collide with the first frames being fetched and decoded.
+ *
+ * Only the clips in view and one beyond them: a group can hold six 1080p
+ * files, and fetching the lot on arrival would cost tens of megabytes for
+ * clips the visitor may never scroll to.
  */
 export function primeSection(section: HTMLElement): void {
-  qsa<HTMLVideoElement>('video', section).forEach((video) => {
+  const videos = qsa<HTMLVideoElement>('video', section);
+  const lastVisible = videos.reduce((last, video, i) => (onScreen(video) ? i : last), -1);
+  const limit = lastVisible < 0 ? 0 : lastVisible + 1;
+  videos.slice(0, limit + 1).forEach((video) => {
     if (video.preload === 'auto') return;
     video.preload = 'auto';
     video.load();
@@ -197,8 +208,19 @@ function wireSteps(strip: HTMLElement): void {
 
   prev.addEventListener('click', () => row.scrollBy({ left: -step(), behavior: 'smooth' }));
   next.addEventListener('click', () => row.scrollBy({ left: step(), behavior: 'smooth' }));
-  row.addEventListener('scroll', update, { passive: true });
+  row.addEventListener(
+    'scroll',
+    () => {
+      update();
+      primeSection(strip);
+    },
+    { passive: true },
+  );
   window.addEventListener('resize', update);
+  // Clips get their width from an aspect ratio, which settles after the first
+  // paint, so the strip has to be measured again whenever it actually changes.
+  new ResizeObserver(update).observe(row);
+  qsa<HTMLElement>('.reel', row).forEach((reel) => new ResizeObserver(update).observe(reel));
   // The strip starts at its head, and the arrows are judged after layout has
   // settled, not before the clips have their size.
   row.scrollLeft = 0;

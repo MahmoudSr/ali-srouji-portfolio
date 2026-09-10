@@ -344,14 +344,14 @@ body.is-gated { overflow: hidden; }
 }
 .reel__slate {
   position: absolute; left: 0; right: 0; bottom: 0;
-  display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.15rem 0.6rem;
   padding: 0.7rem 0.8rem 0.9rem;
   color: var(--fg);
-  background: linear-gradient(to top, rgba(8, 9, 10, 0.85), transparent);
+  background: linear-gradient(to top, rgba(8, 9, 10, 0.9), transparent);
 }
-.reel__slate > span:first-child {
-  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
+.reel__name { grid-column: 1 / -1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reel__cut { color: var(--fg-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .reel__tc { flex: none; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
 
 /* one shared sound control, on reels and on the hero */

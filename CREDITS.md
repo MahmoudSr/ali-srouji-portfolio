@@ -23,3 +23,6 @@ Third-party assets used on the site. Every entry lists the source and licence.
 - **Catering and F&B reels** (2025), shot and cut by Ali Srouji for Furn Beirut and Food District
   (Mikey's, Hamra). Clips in `public/video/catering/` and `public/video/fnb/` are short excerpts
   transcoded from the masters, which stay outside the repo.
+
+- **Stays reels** (2025), shot and cut by Ali Srouji for Barcoo Baakline. Clips in
+  `public/video/stays/` are short excerpts of the delivered reels.
