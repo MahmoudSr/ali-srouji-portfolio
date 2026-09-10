@@ -16,7 +16,7 @@ function reelMarkup(reel: Reel): string {
              muted loop playsinline preload="metadata" aria-label="${reel.title}"></video>
       ${reel.hasAudio ? '<button class="sound mono" type="button" aria-pressed="false">Sound off</button>' : ''}
       <span class="reel__progress" aria-hidden="true"></span>
-      <figcaption class="reel__slate mono"><span>${reel.title}</span><span class="reel__tc">00:00</span></figcaption>
+      <figcaption class="reel__slate mono"><span>${reel.title}${reel.cut ? ` / ${reel.cut}` : ''}</span><span class="reel__tc">00:00</span></figcaption>
     </figure>`;
 }
 

@@ -9,6 +9,8 @@
 export type Reel = {
   id: string;
   title: string;
+  /** Which cut of the piece this is, when one shoot yields several. */
+  cut?: string;
   clip: string;
   poster: string;
   /** Sound is off until the visitor asks for it. */
@@ -30,13 +32,22 @@ export const reelGroups: ReelGroup[] = [
     id: 'weddings',
     title: 'Weddings',
     year: 2025,
-    note: 'Shot and cut for the day itself, vertical, for the couple to post.',
+    note: 'One day, cut two ways, vertical, for the couple to post.',
     reels: [
       {
-        id: 'love',
+        id: 'love-01',
         title: 'Love',
-        clip: '/video/love-reel.mp4',
-        poster: '/frames/reel-love.jpg',
+        cut: 'Cut one',
+        clip: '/video/weddings/love-cut-01.mp4',
+        poster: '/frames/weddings/love-cut-01.jpg',
+        hasAudio: true,
+      },
+      {
+        id: 'love-02',
+        title: 'Love',
+        cut: 'Cut two',
+        clip: '/video/weddings/love-cut-02.mp4',
+        poster: '/frames/weddings/love-cut-02.jpg',
         hasAudio: true,
       },
     ],

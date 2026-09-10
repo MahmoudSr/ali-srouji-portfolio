@@ -60,8 +60,8 @@ export async function initGate(): Promise<void> {
   if (heroClipHasAudio) wireSound(heroVideo, heroSound);
   else heroSound?.remove();
   heroVideo.src = window.matchMedia('(max-width: 760px)').matches
-    ? '/video/hero-loop-720.mp4'
-    : '/video/hero-loop.mp4';
+    ? '/video/film/chase-hero-720.mp4'
+    : '/video/film/chase-hero.mp4';
 
   // Free-running record timecode. It is the site's clock from here on.
   const start = performance.now();

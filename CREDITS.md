@@ -16,5 +16,6 @@ Third-party assets used on the site. Every entry lists the source and licence.
   stays on Ali's external drive and is never modified. Frames are listed with their source timecode
   in `src/scripts/data/frames.ts` so any cut can be re-pulled at a different moment.
 
-- **Love** (2025), wedding reel shot and cut by Ali Srouji. The clip in `public/video/love-reel.mp4`
-  is a 24 second excerpt transcoded from the 2160 x 3840 master, which stays outside the repo.
+- **Love** (2025), a wedding shot and cut by Ali Srouji, shown as two cuts in
+  `public/video/weddings/`. Both are short excerpts transcoded from 4K vertical masters, which stay
+  outside the repo.
