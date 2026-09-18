@@ -1,4 +1,12 @@
 html { background: var(--bg); color: var(--fg); }
+/* The pager owns vertical travel on touch exactly as it does on the wheel. The
+   wheel handler can call preventDefault; a touch listener cannot without going
+   non-passive, so the browser was scrolling the page at the same time as the
+   travel tween and the two fought: the finger pulled one way, the tween the
+   other, and the screen shuddered back and forth. Taking vertical pan away from
+   the browser settles it. Horizontal stays, because the strips are dragged
+   sideways, and pinch zoom stays, because removing it is a real loss. */
+html, body { touch-action: pan-x pinch-zoom; overscroll-behavior: none; }
 body { font-family: var(--font-display); overflow-x: hidden; }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
