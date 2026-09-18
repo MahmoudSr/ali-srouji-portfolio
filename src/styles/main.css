@@ -209,6 +209,9 @@ body.is-gated { overflow: hidden; }
   fill: none; stroke: currentColor; stroke-width: 1.6;
   stroke-linecap: round; stroke-linejoin: round;
 }
+/* The handle keeps its own casing: the rest of the strip is a label, this is
+   something you type into a search field. */
+.social__handle { text-transform: none; }
 .social:hover, .social:focus-visible { color: var(--ember); }
 .social:focus-visible { outline: 1px solid var(--ember); outline-offset: 4px; }
 /* A piece is open on top of the page: nothing behind it is reachable. */
