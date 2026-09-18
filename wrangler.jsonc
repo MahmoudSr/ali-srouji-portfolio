@@ -7,6 +7,10 @@
   "compatibility_date": "2026-09-18",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    // The site is one page with no client-side routes, so a path that does not
+    // exist is a mistake and should say so. Under "single-page-application" a
+    // missing file answers 200 with index.html, which would have handed the
+    // messengers fetching og:image a page of HTML instead of the card.
+    "not_found_handling": "none"
   }
 }
