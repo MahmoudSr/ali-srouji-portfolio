@@ -34,8 +34,9 @@ carries on from the frame the cut stopped on and plays its own edits through to 
 credits. The swap from still to video happens on the video's first painted frame
 (`requestVideoFrameCallback`), so there is no seam.
 
-**After the gate: paging, not scrolling.** One section fills the screen and one gesture moves exactly
-one section. Wheel and touch are read directly in `timeline/pager.ts` and the travel is a GSAP tween
+**After the gate: paging, not scrolling.** Nothing pages while `is-gated` is on the body, so a wheel
+notch during the montage cannot carry the page away mid-cut. After that, one section fills the screen
+and one gesture moves exactly one section. Wheel and touch are read directly in `timeline/pager.ts` and the travel is a GSAP tween
 of the scroll position. **Lenis is deliberately switched off** (see `animations/scroll.ts`): a
 smooth-scroll layer answers the wheel itself and rewrites the scroll position every frame, which
 overshot sections and cancelled the travel outright.
@@ -51,7 +52,15 @@ Rules the owner settled by looking at built alternatives and rejecting them. Do 
 
 **The work.** A group is one section holding related pieces, and a piece is a clip or a still. The
 strip shrinks its pieces as the set grows and is dragged, wheeled sideways, stepped with arrows or
-walked with the left and right keys when it runs past the screen. Clicking a piece opens the viewer:
+walked with the left and right keys when it runs past the screen. The arrows are shown only when the
+row really overflows, measured again as each file reports its size; pieces are never resized to make
+a set fit.
+
+**The photographs live on a light table,** not in a strip: `layout: 'sheet'` on a group renders
+plates instead of reels. Each print keeps the shape it was shot in, hangs off one of two baselines,
+and carries its caption in the margin under it rather than a slate over it. The head turns sideways
+behind a vertical hairline. Hovering lifts one print and drops the rest back, the only motion that
+screen has. All photographs go in this one section, whatever they are of. Clicking a piece opens the viewer:
 full quality file, sound, arrows through the group, Escape to close.
 
 Reduced motion: the gate still gates but dissolves instead of cutting, and paging jumps without a
@@ -69,9 +78,11 @@ technical/edit-suite feel is the current lead).
 
 ## Content and the asset pipeline
 
-**Two files per piece.** `strip` is a light pass the section plays (clips 540x960 at 1.0 Mbps,
-stills 900px); `full` is the quality one, fetched only when a piece is opened (clips at their source
-ceiling, stills 1800px). This is what keeps a full pass through the site around 28 MB instead of 59.
+**Two files per piece.** `strip` is a light pass the section plays (clips 540x960 at 1.0 Mbps
+**with audio**, stills 900px); `full` is the quality one, fetched only when a piece is opened (clips
+at their source ceiling, stills 1800px). A light pass must carry its audio track: encoded silent,
+the strip's sound toggle unmutes a file that has nothing to play, and sound only works in the
+viewer. This is what keeps a full pass through the site around 28 MB instead of 59.
 Adding work is a data change in `src/scripts/data/work.ts` plus the files in `public/`.
 
 **The tools are in `tools/`,** written against AVFoundation because ffmpeg and Homebrew are not
@@ -170,15 +181,11 @@ Visual FX: `shader-glsl` (grain, halation, displacement cuts), `threejs-webgl`, 
 
 ## Open threads
 
-- **The film has no sound control** because its hero clip was encoded silent and the master is on
-  Ali's HDD, which was unplugged. When the drive is connected, re-encode `chase-hero.mp4` from
-  2:18.9 with `audio 1`; the control detects an audio track and appears by itself.
-- **Four car photographs** (Land Rover interiors and a wheel) are promised but were never in
-  Downloads. They want a home: probably their own group, since no existing section fits.
-- **The reels section still has empty space** in groups holding only three pieces. It fills as more
-  work arrives.
+- **The Beirut street set needs its real name.** Eight frames came over as `BARS_*.PNG` and are
+  captioned `Beirut` with a described cut each; if the shoot has a name it is one line per frame in
+  `work.ts`.
 - **Video hosting** should move off the repo before launch.
-- Sections so far: the film, Weddings & Catering, F&B, Stays.
+- Sections so far: the film, Weddings & Catering, F&B, Stays, Stills.
 
 ## Retired directions (do not resurrect without asking)
 

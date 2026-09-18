@@ -22,6 +22,16 @@ export function isPaging(): boolean {
   return paging;
 }
 
+/**
+ * The gate owns the screen until the cut-in has handed over to the film, and
+ * `is-gated` comes off the body at that exact moment. Nothing pages before
+ * then: a wheel notch during the montage used to carry the page a section away
+ * mid-cut, which is the one thing the gate exists to prevent.
+ */
+function isGated(): boolean {
+  return document.body.classList.contains('is-gated');
+}
+
 export function initPager(): void {
   const sections = qsa<HTMLElement>('[data-section]');
   if (sections.length < 2) return;
@@ -95,6 +105,11 @@ export function initPager(): void {
       e.preventDefault();
       // A piece is open on top of the page: nothing pages behind it.
       if (paging || isViewerOpen()) return;
+      // Whatever is spent against the gate is spent, not banked for after it.
+      if (isGated()) {
+        travel = 0;
+        return;
+      }
 
       const now = performance.now();
       if (now - lastEvent > GESTURE_GAP) travel = 0;
@@ -119,7 +134,7 @@ export function initPager(): void {
   window.addEventListener(
     'touchmove',
     (e) => {
-      if (paging || isViewerOpen()) return;
+      if (paging || isViewerOpen() || isGated()) return;
       const y = e.touches[0]?.clientY ?? 0;
       const dy = touchStart - y;
       if (Math.abs(dy) < 60) return;
@@ -130,7 +145,7 @@ export function initPager(): void {
   );
 
   window.addEventListener('keydown', (e) => {
-    if (isViewerOpen()) return;
+    if (isViewerOpen() || isGated()) return;
     if (e.code === 'ArrowDown' || e.code === 'PageDown') go(index + 1);
     if (e.code === 'ArrowUp' || e.code === 'PageUp') go(index - 1);
   });

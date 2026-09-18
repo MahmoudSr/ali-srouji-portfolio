@@ -12,6 +12,22 @@ import { qs, qsa } from '../utils/dom';
 const pad = (n: number) => String(n).padStart(2, '0');
 const clipTime = (t: number) => `${pad(Math.floor(t / 60))}:${pad(Math.floor(t % 60))}`;
 
+/**
+ * A print on the light table. No slate over the picture and no play chrome: a
+ * photograph is not playing, so it gets a caption in the margin under it, the
+ * way a print on a table does.
+ */
+function plateMarkup(item: Item, i: number): string {
+  return `
+    <figure class="plate" id="reel-${item.id}" data-index="${i}" tabindex="0">
+      <img class="plate__image" src="${item.strip}" alt="${item.title}" loading="lazy" decoding="async" />
+      <figcaption class="plate__caption mono">
+        <span class="plate__name">${item.title}</span>
+        <span class="plate__cut">${item.cut ?? ''}</span>
+      </figcaption>
+    </figure>`;
+}
+
 function itemMarkup(item: Item, i: number): string {
   const slate = `
       <figcaption class="reel__slate mono">
@@ -39,16 +55,18 @@ function itemMarkup(item: Item, i: number): string {
 }
 
 function groupMarkup(group: Group): string {
+  const sheet = group.layout === 'sheet';
+  const piece = sheet ? plateMarkup : itemMarkup;
   return `
-    <section class="group" id="group-${group.id}" data-section
+    <section class="group${sheet ? ' group--sheet' : ''}" id="group-${group.id}" data-section
              data-slate="${group.title} / ${group.year}">
       <header class="group__head">
         <h3 class="group__title">${group.title}</h3>
         <p class="group__note mono">${group.note}</p>
       </header>
       <div class="group__strip">
-        <div class="group__row" data-count="${group.items.length}">
-          ${group.items.map(itemMarkup).join('')}
+        <div class="group__row${sheet ? ' group__row--sheet' : ''}" data-count="${group.items.length}">
+          ${group.items.map(piece).join('')}
         </div>
         <button class="strip__step strip__step--prev" type="button" aria-label="Previous clips" hidden>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 L7 12 L15 20" /></svg>
@@ -150,6 +168,10 @@ function makeDraggable(row: HTMLElement): void {
   let startLeft = 0;
 
   row.addEventListener('pointerdown', (e) => {
+    // A press that starts on a control is that control's, not the strip's. A
+    // few pixels of drift while pressing a sound button used to turn into a
+    // drag, which captured the pointer and swallowed the click.
+    if ((e.target as HTMLElement).closest('button')) return;
     down = true;
     dragging = false;
     startX = e.clientX;
@@ -204,13 +226,15 @@ function wireSteps(strip: HTMLElement): void {
   const prev = qs<HTMLButtonElement>('.strip__step--prev', strip)!;
   const next = qs<HTMLButtonElement>('.strip__step--next', strip)!;
 
-  const step = () => (qs<HTMLElement>('.reel', row)?.clientWidth ?? 320) + 16;
+  const step = () => (qs<HTMLElement>('.reel, .plate', row)?.clientWidth ?? 320) + 16;
   const update = () => {
-    const overflows = row.scrollWidth - row.clientWidth > 8;
+    // A row that has not been laid out yet measures as nothing, which must not
+    // be read as overflow: that is what put arrows on a section that fits.
+    const room = row.clientWidth;
+    const overflows = room > 0 && row.scrollWidth - room > 8;
     prev.hidden = !overflows || row.scrollLeft <= 4;
-    next.hidden = !overflows || row.scrollLeft >= row.scrollWidth - row.clientWidth - 4;
+    next.hidden = !overflows || row.scrollLeft >= row.scrollWidth - room - 4;
   };
-
   prev.addEventListener('click', () => row.scrollBy({ left: -step(), behavior: 'smooth' }));
   next.addEventListener('click', () => row.scrollBy({ left: step(), behavior: 'smooth' }));
   row.addEventListener(
@@ -222,10 +246,14 @@ function wireSteps(strip: HTMLElement): void {
     { passive: true },
   );
   window.addEventListener('resize', update);
-  // Pieces get their width from an aspect ratio, which settles after the first
-  // paint, so the strip is measured again whenever it actually changes.
+  // Pieces get their width from their own shape, which settles after the first
+  // paint and again as each file reports its size, so the row is measured on
+  // every one of those moments as well as whenever the row itself changes.
   new ResizeObserver(update).observe(row);
-  qsa<HTMLElement>('.reel', row).forEach((reel) => new ResizeObserver(update).observe(reel));
+  qsa<HTMLImageElement | HTMLVideoElement>('img, video', row).forEach((media) => {
+    media.addEventListener('load', update);
+    media.addEventListener('loadedmetadata', update);
+  });
   row.scrollLeft = 0;
   requestAnimationFrame(update);
 }
@@ -240,7 +268,7 @@ export function initReels(): void {
 
   groups.forEach((group) => {
     const section = qs<HTMLElement>(`#group-${group.id}`)!;
-    qsa<HTMLElement>('.reel', section).forEach((figure) => {
+    qsa<HTMLElement>('.reel, .plate', section).forEach((figure) => {
       const at = Number(figure.dataset.index ?? 0);
 
       // Opening a piece is what asks for its full quality file.

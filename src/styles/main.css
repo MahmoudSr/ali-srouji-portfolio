@@ -148,6 +148,10 @@ body.is-gated { overflow: hidden; }
 .hero__frame video { width: 100%; height: 100%; object-fit: cover; }
 .hero__frame::after {
   content: ''; position: absolute; inset: 0;
+  /* Decoration only. A pseudo-element paints after its box's children, so
+     without this the grade sits on top of the sound control and eats the
+     click: the button looks live and cannot be pressed. */
+  pointer-events: none;
   background: linear-gradient(to top, rgba(8,9,10,0.94) 4%, rgba(8,9,10,0.25) 46%, rgba(8,9,10,0.6) 100%);
 }
 .hero__body {
@@ -187,6 +191,28 @@ body.is-gated { overflow: hidden; }
   opacity: 0;
 }
 .hud__tc { color: var(--fg); font-variant-numeric: tabular-nums; }
+/* The right of the strip is the slate: what is on screen, then where to find
+   more of it. The mark is set as part of that line rather than as a control in
+   a box, because the strip is typography and everything in it reads as credit.
+   The HUD ignores the pointer, so the one thing here that is live takes it back. */
+.hud__right { display: inline-flex; align-items: center; gap: 0.9rem; min-width: 0; }
+.hud__meta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.social {
+  pointer-events: auto;
+  display: inline-flex; align-items: center; gap: 0.55em; flex: none;
+  padding-left: 0.9rem; border-left: 1px solid var(--line);
+  color: var(--fg-dim); text-decoration: none;
+  transition: color 0.25s var(--ease-out-expo);
+}
+.social svg {
+  width: 1rem; height: 1rem;
+  fill: none; stroke: currentColor; stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.social:hover, .social:focus-visible { color: var(--ember); }
+.social:focus-visible { outline: 1px solid var(--ember); outline-offset: 4px; }
+/* A piece is open on top of the page: nothing behind it is reachable. */
+body.is-viewing .social { pointer-events: none; }
 .hud__bar { position: fixed; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--line); z-index: 76; opacity: 0; }
 .hud__fill { display: block; height: 100%; background: var(--ember); transform: scaleX(0); transform-origin: left; }
 
@@ -197,6 +223,7 @@ body.is-gated { overflow: hidden; }
   .gate__cue-touch { display: block; }
   .hero__body { grid-template-columns: 1fr; }
   .hud__meta { display: none; }
+  .social { padding-left: 0; border-left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -333,7 +360,7 @@ body.is-gated { overflow: hidden; }
 .reel {
   position: relative; margin: 0;
   flex: 0 0 auto;
-  height: 100%; aspect-ratio: 9 / 16;
+  height: 92%; aspect-ratio: 9 / 16;
   background: #000; overflow: hidden;
   border-radius: var(--radius);
 }
@@ -370,24 +397,23 @@ body.is-gated { overflow: hidden; }
 .sound:hover { border-color: var(--ember); color: var(--ember); }
 .sound:active { transform: translateY(1px); }
 .sound.is-on { border-color: var(--ember); color: var(--ember); }
-.sound--hero { top: auto; bottom: calc(var(--gutter) + 3rem); right: var(--gutter); }
+/* Above .hero__body (z-index 2): that block runs the full width of the bottom
+   band and its padding reaches the foot of the screen, so without this it lies
+   over the control and takes the click even where it shows nothing. */
+.sound--hero { top: auto; bottom: calc(var(--gutter) + 3rem); right: var(--gutter); z-index: 3; }
 
 @media (max-width: 760px) {
   .group__row { gap: 0.6rem; }
   .group__note { display: none; }
 }
 
-/* A group can hold one clip or half a dozen: they shrink as the set grows,
-   and the strip is dragged when it runs past the edge of the screen. */
+/* A clip is the same size in every group, however many the group holds: a set
+   too big for the screen is dragged, not shrunk. Sizing by count made six clips
+   smaller than three without ever making them fit. */
 .group__row { cursor: grab; touch-action: pan-x; }
 .group__row.is-dragging { cursor: grabbing; }
-.group__row.is-dragging .reel { pointer-events: none; }
-.group__row[data-count="3"] .reel,
-.group__row[data-count="4"] .reel { height: 92%; }
-.group__row[data-count="5"] .reel,
-.group__row[data-count="6"] .reel { height: 84%; }
-.group__row[data-count="7"] .reel,
-.group__row[data-count="8"] .reel { height: 76%; }
+.group__row.is-dragging .reel,
+.group__row.is-dragging .plate { pointer-events: none; }
 
 /* the strip and its arrows */
 .group__strip { position: relative; min-height: 0; display: grid; }
@@ -414,6 +440,76 @@ body.is-gated { overflow: hidden; }
 .reel__image { height: 100%; width: auto; display: block; object-fit: cover; }
 .reel { cursor: pointer; }
 .reel:focus-visible { outline: 1px solid var(--ember); outline-offset: 3px; }
+
+/* ---------- the light table ---------- */
+/* Photographs are not clips. A clip is one shape on one baseline with a slate
+   over the moving picture; a print keeps the shape it was shot in, hangs off
+   one of two baselines, and carries its caption in the margin underneath. The
+   head turns sideways too, so the screen reads as a different object before a
+   word of it has been read. */
+.group--sheet .group__head { border-bottom: 0; padding-bottom: 0; align-items: flex-start; }
+
+.plate {
+  position: relative; margin: 0;
+  flex: 0 0 auto;
+  height: 88%;
+  /* the margin the caption is printed in */
+  padding-bottom: 2.1rem;
+  cursor: zoom-in;
+  transition: transform 0.45s var(--ease-out-expo), opacity 0.45s var(--ease-out-expo);
+}
+.plate__image { height: 100%; width: auto; display: block; object-fit: contain; }
+.plate__caption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: baseline; gap: 0.55rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+  color: var(--fg-dim);
+  white-space: nowrap; overflow: hidden;
+  transition: border-color 0.3s var(--ease-out-expo), color 0.3s var(--ease-out-expo);
+}
+.plate__name { color: var(--fg); flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; }
+.plate__cut { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.plate:focus-visible { outline: 1px solid var(--ember); outline-offset: 4px; }
+
+/* Picking a print up off the table: the one under the cursor lifts and the
+   rest fall back, which is the only motion this screen has. */
+.group__row--sheet:hover .plate,
+.group__row--sheet:focus-within .plate { opacity: 0.4; }
+.group__row--sheet .plate:hover,
+.group__row--sheet .plate:focus-visible { opacity: 1; transform: translateY(-8px); }
+.plate:hover .plate__caption,
+.plate:focus-visible .plate__caption { border-color: var(--ember); color: var(--fg); }
+
+@media (min-width: 900px) {
+  .group--sheet {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+    column-gap: clamp(2rem, 5vw, 4.5rem);
+  }
+  .group--sheet .group__head {
+    flex-direction: column; flex-wrap: nowrap;
+    justify-content: flex-end; align-self: stretch;
+    gap: 1rem;
+    padding-right: clamp(1.5rem, 3vw, 3rem);
+    border-right: 1px solid var(--line);
+  }
+  .group--sheet .group__title { font-size: clamp(2rem, 4.4vw, 3.6rem); }
+  .group--sheet .group__note { max-width: 24ch; }
+
+  /* Small enough that four or five prints are on the table at once, which is
+     what makes it a table rather than a slideshow. */
+  .group__row--sheet { align-items: flex-start; gap: clamp(1.25rem, 3vw, 3rem); }
+  .group__row--sheet .plate:nth-child(4n + 1) { height: 58%; align-self: flex-start; }
+  .group__row--sheet .plate:nth-child(4n + 2) { height: 78%; align-self: flex-end; }
+  .group__row--sheet .plate:nth-child(4n + 3) { height: 48%; align-self: flex-start; }
+  .group__row--sheet .plate:nth-child(4n + 4) { height: 66%; align-self: flex-end; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .group__row--sheet .plate:hover,
+  .group__row--sheet .plate:focus-visible { transform: none; }
+}
 
 /* ---------- the viewer ---------- */
 body.is-viewing { overflow: hidden; }
@@ -447,20 +543,28 @@ body.is-viewing { overflow: hidden; }
 .viewer__nav--prev { left: var(--gutter); }
 .viewer__nav--next { right: var(--gutter); }
 
-.viewer__stage { margin: 0; display: grid; place-items: center; min-height: 0; }
-/* A reel keeps a reel's shape: it is sized off the height it has to spare,
-   never stretched wider, and sits in the middle of the screen. */
+.viewer__stage { margin: 0; position: relative; min-height: 0; min-width: 0; }
+/* A reel keeps a reel's shape and is measured against the space the stage
+   actually has, never against the viewport: a viewport-height ceiling ignores
+   the chrome and the foot, so a tall clip outgrew its row and slid off the
+   bottom of the screen. Absolute + inset 0 + auto margins resolves the caps
+   against the stage box, so the piece always fits and always sits centred. */
 .viewer__media {
-  height: min(100%, 78vh);
+  position: absolute;
+  inset: 0;
+  margin: auto;
   width: auto;
+  height: auto;
   max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   border-radius: var(--radius);
   background: #000;
   display: block;
-  margin: auto;
 }
-.viewer__foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: var(--fg-dim); }
+/* The foot keeps its height when a still empties it, so the frame does not
+   jump as you step from a clip to a photograph and back. */
+.viewer__foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: var(--fg-dim); min-height: 2.25rem; }
 .viewer__tc { font-variant-numeric: tabular-nums; }
 .viewer__sound {
   position: static;

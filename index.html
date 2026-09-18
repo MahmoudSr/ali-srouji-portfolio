@@ -77,11 +77,24 @@
     <div class="film-vignette" aria-hidden="true"></div>
     <div class="film-grain" aria-hidden="true"></div>
 
-    <div class="hud mono" aria-hidden="true">
-      <span class="hud__tc" id="hud-tc">00:00:00:00</span>
-      <span class="hud__meta">Chase Me Down to Main Street / 2025</span>
+    <div class="hud mono">
+      <span class="hud__tc" id="hud-tc" aria-hidden="true">00:00:00:00</span>
+      <span class="hud__right">
+        <span class="hud__meta" aria-hidden="true">Chase Me Down to Main Street / 2025</span>
+        <!-- TODO: swap in Ali's handle, in the href and in the label. -->
+        <a class="social" id="social-ig" href="https://www.instagram.com/"
+           target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5" />
+            <circle cx="12" cy="12" r="4.2" />
+            <circle cx="17.3" cy="6.7" r="0.9" />
+          </svg>
+          <span class="social__handle">Instagram</span>
+        </a>
+      </span>
     </div>
     <div class="hud__bar" aria-hidden="true"><span class="hud__fill" id="hud-fill"></span></div>
+
 
     <script type="module" src="/src/main.ts"></script>
   </body>

@@ -31,6 +31,13 @@ export type Group = {
   title: string;
   year: number;
   note: string;
+  /**
+   * How the section is arranged. `strip` is the clip strip: one shape, one
+   * baseline, pieces playing side by side. `sheet` is the light table the
+   * photographs get: each print at the shape it was shot in, hung off two
+   * baselines, with its caption in the margin under it.
+   */
+  layout?: 'strip' | 'sheet';
   items: Item[];
 };
 
@@ -169,22 +176,6 @@ export const groups: Group[] = [
         poster: '/frames/fnb/food-district-03.jpg',
         hasAudio: true,
       },
-      {
-        id: 'fd-still-01',
-        kind: 'still',
-        title: 'Food District',
-        cut: 'Sliders, still',
-        strip: '/stills/fnb/food-district-01-strip.jpg',
-        full: '/stills/fnb/food-district-01.jpg',
-      },
-      {
-        id: 'fd-still-02',
-        kind: 'still',
-        title: 'Food District',
-        cut: 'Tray, still',
-        strip: '/stills/fnb/food-district-02-strip.jpg',
-        full: '/stills/fnb/food-district-02.jpg',
-      },
     ],
   },
   {
@@ -222,6 +213,129 @@ export const groups: Group[] = [
         full: '/video/stays/barcoo-03.mp4',
         poster: '/frames/stays/barcoo-03.jpg',
         hasAudio: true,
+      },
+    ],
+  },
+  {
+    id: 'stills',
+    title: 'Stills',
+    year: 2025,
+    note: 'The photographs, each at the shape it was shot in.',
+    layout: 'sheet',
+    // Ordered so no two frames from the same shoot sit next to each other: the
+    // table is a mix, and the heights alternate in fours.
+    items: [
+      {
+        id: 'beirut-grille',
+        kind: 'still',
+        title: 'Beirut',
+        cut: 'Behind the grille',
+        strip: '/stills/bars/bars-01-strip.jpg',
+        full: '/stills/bars/bars-01.jpg',
+      },
+      {
+        id: 'rover-wheel',
+        kind: 'still',
+        title: 'Land Rover',
+        cut: 'Wheel',
+        strip: '/stills/cars/rover-04-strip.jpg',
+        full: '/stills/cars/rover-04.jpg',
+      },
+      {
+        id: 'beirut-awning',
+        kind: 'still',
+        title: 'Beirut',
+        cut: 'The Italian oven',
+        strip: '/stills/bars/bars-04-strip.jpg',
+        full: '/stills/bars/bars-04.jpg',
+      },
+      {
+        id: 'fd-still-01',
+        kind: 'still',
+        title: 'Food District',
+        cut: 'Sliders',
+        strip: '/stills/fnb/food-district-01-strip.jpg',
+        full: '/stills/fnb/food-district-01.jpg',
+      },
+      {
+        id: 'beirut-phone',
+        kind: 'still',
+        title: 'Beirut',
+        cut: 'Payphone',
+        strip: '/stills/bars/bars-07-strip.jpg',
+        full: '/stills/bars/bars-07.jpg',
+      },
+      {
+        id: 'rover-console',
+        kind: 'still',
+        title: 'Land Rover',
+        cut: 'Centre console',
+        strip: '/stills/cars/rover-03-strip.jpg',
+        full: '/stills/cars/rover-03.jpg',
+      },
+      {
+        id: 'beirut-kiosk',
+        kind: 'still',
+        title: 'Beirut',
+        cut: 'The kiosk',
+        strip: '/stills/bars/bars-02-strip.jpg',
+        full: '/stills/bars/bars-02.jpg',
+      },
+      {
+        id: 'fd-still-02',
+        kind: 'still',
+        title: 'Food District',
+        cut: 'Tray',
+        strip: '/stills/fnb/food-district-02-strip.jpg',
+        full: '/stills/fnb/food-district-02.jpg',
+      },
+      {
+        id: 'beirut-face',
+        kind: 'still',
+        title: 'Beirut',
+        cut: 'Painted face',
+        strip: '/stills/bars/bars-05-strip.jpg',
+        full: '/stills/bars/bars-05.jpg',
+      },
+      {
+        id: 'rover-rear',
+        kind: 'still',
+        title: 'Land Rover',
+        cut: 'Rear console',
+        strip: '/stills/cars/rover-02-strip.jpg',
+        full: '/stills/cars/rover-02.jpg',
+      },
+      {
+        id: 'beirut-posters',
+        kind: 'still',
+        title: 'Beirut',
+        cut: 'Fairuz',
+        strip: '/stills/bars/bars-08-strip.jpg',
+        full: '/stills/bars/bars-08.jpg',
+      },
+      {
+        id: 'rover-seats',
+        kind: 'still',
+        title: 'Land Rover',
+        cut: 'Rear seats',
+        strip: '/stills/cars/rover-01-strip.jpg',
+        full: '/stills/cars/rover-01.jpg',
+      },
+      {
+        id: 'beirut-shirt',
+        kind: 'still',
+        title: 'Beirut',
+        cut: 'Los Pollos',
+        strip: '/stills/bars/bars-03-strip.jpg',
+        full: '/stills/bars/bars-03.jpg',
+      },
+      {
+        id: 'beirut-portrait',
+        kind: 'still',
+        title: 'Beirut',
+        cut: 'Framed',
+        strip: '/stills/bars/bars-06-strip.jpg',
+        full: '/stills/bars/bars-06.jpg',
       },
     ],
   },
